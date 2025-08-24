@@ -27,12 +27,20 @@ Host github.com
   IdentitiesOnly yes
 EOF
 chmod 600 ~/.ssh/config
+
+# メッセージ表示と一時停止
+echo "✅ 公開鍵がクリップボードにコピーされました"
+echo "🚀 エンターキーを押すとGitHubのSSHキー設定ページが開きます"
+echo "📝 ページで「New SSH key」をクリックして公開鍵を登録してください"
+echo "⏳ 準備ができたらエンターキーを押してください"
+read
+
+# GitHubのSSHキー設定ページを自動で開く
+open https://github.com/settings/keys
 ```
 
-⬇️
 
-**上記コマンドで生成された公開鍵がクリップボードにコピーされています。下記URLからGitHubにログインし、「New SSH key」などで公開鍵を登録してください。**
-- https://github.com/settings/keys
+**💡 ヒント：コマンドを実行すると、自動的にGitHubのSSHキー設定ページが開きます。**
 
 ---
 
@@ -42,15 +50,10 @@ SSHキーをGitHubに登録したら、以下をまとめて実行してくだ�
 
 ```sh
 # dotfilesリポジトリをクローン
-dir=~/dev/github.com/naoHash
-mkdir -p "$dir"
-cd "$dir"
-git clone git@github.com:naoHash/dotfiles.git
-cd dotfiles
+dir=~/dev/github.com/naoHash && mkdir -p "$dir" && git clone -C "$dir" 
+git@github.com:naoHash/dotfiles.git
 
-# 実行権限を付与
+# 実行権限を付与し実行
 chmod +x ./install.sh
-
-# セットアップスクリプトを実行
 ./install.sh
 ```
