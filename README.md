@@ -4,7 +4,9 @@
 
 ---
 
-### ステップ1：SSHキー作成とGitHub登録
+### macOS/Linux用
+
+#### ステップ1：SSHキー作成とGitHub登録
 
 まずはGitHubに安全に接続するためのSSHキーを作成し、公開鍵をGitHubに登録します。
 
@@ -37,12 +39,7 @@ echo "🌐 GitHubのSSHキー設定ページを開いています..."
 open https://github.com/settings/keys
 ```
 
-
-**💡 ヒント：コマンドを実行すると、自動的にGitHubのSSHキー設定ページが開きます。**
-
----
-
-### ステップ2：dotfilesセットアップ
+#### ステップ2：dotfilesセットアップ
 
 SSHキーをGitHubに登録したら、以下をまとめて実行してください。
 
@@ -56,4 +53,60 @@ echo "🚀 dotfilesのセットアップを開始します..."
 cd dotfiles
 chmod +x ./install.sh
 ./install.sh
+```
+
+---
+
+### Windows用
+
+#### ステップ1：SSHキー作成とGitHub登録
+
+まずはGitHubに安全に接続するためのSSHキーを作成し、公開鍵をGitHubに登録します。
+
+```powershell
+Write-Host "🔧 Windows用の開発環境を確認中..." -ForegroundColor Green
+
+Write-Host "🔑 SSHキーを生成中..." -ForegroundColor Green
+if (!(Test-Path "$env:USERPROFILE\.ssh")) {
+    New-Item -ItemType Directory -Path "$env:USERPROFILE\.ssh" -Force
+}
+
+ssh-keygen -t ed25519 -f "$env:USERPROFILE\.ssh\github_ed25519" -N '""' -C '""'
+Get-Content "$env:USERPROFILE\.ssh\github_ed25519.pub" | Set-Clipboard
+
+Write-Host "⚙️ SSH configを作成中..." -ForegroundColor Green
+$sshConfig = @"
+Host github.com
+  HostName github.com
+  User git
+  IdentityFile $env:USERPROFILE\.ssh\github_ed25519
+  IdentitiesOnly yes
+"@
+Add-Content -Path "$env:USERPROFILE\.ssh\config" -Value $sshConfig
+
+Write-Host "✅ 公開鍵がクリップボードにコピーされました" -ForegroundColor Green
+Write-Host "🚀 エンターキーを押すとGitHubのSSHキー設定ページが開きます" -ForegroundColor Green
+Write-Host "📝 ページで「New SSH key」をクリックして公開鍵を登録してください" -ForegroundColor Green
+Write-Host "⏳ 準備ができたらエンターキーを押してください" -ForegroundColor Yellow
+Read-Host
+
+Write-Host "🌐 GitHubのSSHキー設定ページを開いています..." -ForegroundColor Green
+Start-Process "https://github.com/settings/keys"
+```
+
+#### ステップ2：dotfilesセットアップ
+
+SSHキーをGitHubに登録したら、以下をまとめて実行してください。
+
+```powershell
+Write-Host "📁 dotfilesリポジトリをクローン中..." -ForegroundColor Green
+if (!(Test-Path "$env:USERPROFILE\dev\github.com\naoHash")) {
+    New-Item -ItemType Directory -Path "$env:USERPROFILE\dev\github.com\naoHash" -Force
+}
+Set-Location "$env:USERPROFILE\dev\github.com\naoHash"
+git clone git@github.com:naoHash/dotfiles.git
+
+Write-Host "🚀 dotfilesのセットアップを開始します..." -ForegroundColor Green
+Set-Location dotfiles
+.\install.ps1
 ```
