@@ -66,6 +66,33 @@ chmod +x ./install.sh
 ```powershell
 Write-Host "🔧 Windows用の開発環境を確認中..." -ForegroundColor Green
 
+# Gitがインストールされているかチェック
+if (!(Get-Command git -ErrorAction SilentlyContinue)) {
+    Write-Host "📦 Gitがインストールされていません。自動インストールを試行します..." -ForegroundColor Yellow
+    
+    # wingetが利用可能かチェック
+    if (Get-Command winget -ErrorAction SilentlyContinue) {
+        Write-Host "🚀 wingetを使用してGit for Windowsをインストール中..." -ForegroundColor Green
+        try {
+            winget install --id Git.Git -e --source winget
+            Write-Host "✅ Git for Windowsのインストールが完了しました" -ForegroundColor Green
+            Write-Host "🔄 PowerShellを再起動してから、このスクリプトを再実行してください" -ForegroundColor Yellow
+            exit
+        }
+        catch {
+            Write-Host "❌ wingetでのインストールに失敗しました" -ForegroundColor Red
+        }
+    }
+    
+    # wingetが利用できない場合のフォールバック
+    Write-Host "💡 手動インストールが必要です。Git for Windowsのダウンロードページを開きます..." -ForegroundColor Yellow
+    Write-Host "🚀 Git for Windowsのダウンロードページを開いています..." -ForegroundColor Green
+    Start-Process "https://git-scm.com/download/win"
+    exit
+}
+
+Write-Host "✅ Gitがインストールされています" -ForegroundColor Green
+
 Write-Host "🔑 SSHキーを生成中..." -ForegroundColor Green
 if (!(Test-Path "$env:USERPROFILE\.ssh")) {
     New-Item -ItemType Directory -Path "$env:USERPROFILE\.ssh" -Force
